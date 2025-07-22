@@ -6,13 +6,46 @@
 	objectVersion = 77;
 	objects = {
 
+/* Begin PBXBuildFile section */
+		2C3FFCAC2E2271A500E76820 /* ComposableArchitecture in Frameworks */ = {isa = PBXBuildFile; productRef = 2C3FFCAB2E2271A500E76820 /* ComposableArchitecture */; };
+		2CD5EAE62E22E53B001225A8 /* RealmSwift in Frameworks */ = {isa = PBXBuildFile; productRef = 2CD5EAE52E22E53B001225A8 /* RealmSwift */; };
+		2CD5EAE72E22E53B001225A8 /* RealmSwift in Embed Frameworks */ = {isa = PBXBuildFile; productRef = 2CD5EAE52E22E53B001225A8 /* RealmSwift */; settings = {ATTRIBUTES = (CodeSignOnCopy, ); }; };
+/* End PBXBuildFile section */
+
+/* Begin PBXCopyFilesBuildPhase section */
+		2C9509B62E22AC9E00ACD8E9 /* Embed Frameworks */ = {
+			isa = PBXCopyFilesBuildPhase;
+			buildActionMask = 2147483647;
+			dstPath = "";
+			dstSubfolderSpec = 10;
+			files = (
+				2CD5EAE72E22E53B001225A8 /* RealmSwift in Embed Frameworks */,
+			);
+			name = "Embed Frameworks";
+			runOnlyForDeploymentPostprocessing = 0;
+		};
+/* End PBXCopyFilesBuildPhase section */
+
 /* Begin PBXFileReference section */
 		2C3FFC9C2E20235D00E76820 /* MyBodyMap.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = MyBodyMap.app; sourceTree = BUILT_PRODUCTS_DIR; };
 /* End PBXFileReference section */
 
+/* Begin PBXFileSystemSynchronizedBuildFileExceptionSet section */
+		2C3CBF8C2E2D10D30025DDC6 /* Exceptions for "MyBodyMap" folder in "MyBodyMap" target */ = {
+			isa = PBXFileSystemSynchronizedBuildFileExceptionSet;
+			membershipExceptions = (
+				Info.plist,
+			);
+			target = 2C3FFC9B2E20235D00E76820 /* MyBodyMap */;
+		};
+/* End PBXFileSystemSynchronizedBuildFileExceptionSet section */
+
 /* Begin PBXFileSystemSynchronizedRootGroup section */
 		2C3FFC9E2E20235D00E76820 /* MyBodyMap */ = {
 			isa = PBXFileSystemSynchronizedRootGroup;
+			exceptions = (
+				2C3CBF8C2E2D10D30025DDC6 /* Exceptions for "MyBodyMap" folder in "MyBodyMap" target */,
+			);
 			path = MyBodyMap;
 			sourceTree = "<group>";
 		};
@@ -23,6 +56,8 @@
 			isa = PBXFrameworksBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+				2CD5EAE62E22E53B001225A8 /* RealmSwift in Frameworks */,
+				2C3FFCAC2E2271A500E76820 /* ComposableArchitecture in Frameworks */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -33,6 +68,7 @@
 			isa = PBXGroup;
 			children = (
 				2C3FFC9E2E20235D00E76820 /* MyBodyMap */,
+				2C9509B22E22AC9800ACD8E9 /* Frameworks */,
 				2C3FFC9D2E20235D00E76820 /* Products */,
 			);
 			sourceTree = "<group>";
@@ -45,6 +81,13 @@
 			name = Products;
 			sourceTree = "<group>";
 		};
+		2C9509B22E22AC9800ACD8E9 /* Frameworks */ = {
+			isa = PBXGroup;
+			children = (
+			);
+			name = Frameworks;
+			sourceTree = "<group>";
+		};
 /* End PBXGroup section */
 
 /* Begin PBXNativeTarget section */
@@ -55,6 +98,7 @@
 				2C3FFC982E20235D00E76820 /* Sources */,
 				2C3FFC992E20235D00E76820 /* Frameworks */,
 				2C3FFC9A2E20235D00E76820 /* Resources */,
+				2C9509B62E22AC9E00ACD8E9 /* Embed Frameworks */,
 			);
 			buildRules = (
 			);
@@ -65,6 +109,8 @@
 			);
 			name = MyBodyMap;
 			packageProductDependencies = (
+				2C3FFCAB2E2271A500E76820 /* ComposableArchitecture */,
+				2CD5EAE52E22E53B001225A8 /* RealmSwift */,
 			);
 			productName = MyBodyMap;
 			productReference = 2C3FFC9C2E20235D00E76820 /* MyBodyMap.app */;
@@ -94,6 +140,10 @@
 			);
 			mainGroup = 2C3FFC932E20235D00E76820;
 			minimizedProjectReferenceProxies = 1;
+			packageReferences = (
+				2C3FFCAA2E2271A400E76820 /* XCRemoteSwiftPackageReference "swift-composable-architecture" */,
+				2C3FFCB92E227EE300E76820 /* XCRemoteSwiftPackageReference "realm-swift" */,
+			);
 			preferredProjectObjectVersion = 77;
 			productRefGroup = 2C3FFC9D2E20235D00E76820 /* Products */;
 			projectDirPath = "";
@@ -256,11 +306,15 @@
 				DEVELOPMENT_TEAM = J5V4FRQ99J;
 				ENABLE_PREVIEWS = YES;
 				GENERATE_INFOPLIST_FILE = YES;
+				INFOPLIST_FILE = MyBodyMap/Info.plist;
+				INFOPLIST_KEY_CFBundleDisplayName = "My Body Map";
+				INFOPLIST_KEY_LSApplicationCategoryType = "public.app-category.healthcare-fitness";
+				INFOPLIST_KEY_NSCameraUsageDescription = "Для съёмки фото прогресса приложению нужен доступ к камере.";
 				INFOPLIST_KEY_UIApplicationSceneManifest_Generation = YES;
 				INFOPLIST_KEY_UIApplicationSupportsIndirectInputEvents = YES;
 				INFOPLIST_KEY_UILaunchScreen_Generation = YES;
-				INFOPLIST_KEY_UISupportedInterfaceOrientations_iPad = "UIInterfaceOrientationPortrait UIInterfaceOrientationPortraitUpsideDown UIInterfaceOrientationLandscapeLeft UIInterfaceOrientationLandscapeRight";
-				INFOPLIST_KEY_UISupportedInterfaceOrientations_iPhone = "UIInterfaceOrientationPortrait UIInterfaceOrientationLandscapeLeft UIInterfaceOrientationLandscapeRight";
+				INFOPLIST_KEY_UIStatusBarStyle = "";
+				INFOPLIST_KEY_UISupportedInterfaceOrientations = UIInterfaceOrientationPortrait;
 				LD_RUNPATH_SEARCH_PATHS = (
 					"$(inherited)",
 					"@executable_path/Frameworks",
@@ -284,11 +338,15 @@
 				DEVELOPMENT_TEAM = J5V4FRQ99J;
 				ENABLE_PREVIEWS = YES;
 				GENERATE_INFOPLIST_FILE = YES;
+				INFOPLIST_FILE = MyBodyMap/Info.plist;
+				INFOPLIST_KEY_CFBundleDisplayName = "My Body Map";
+				INFOPLIST_KEY_LSApplicationCategoryType = "public.app-category.healthcare-fitness";
+				INFOPLIST_KEY_NSCameraUsageDescription = "Для съёмки фото прогресса приложению нужен доступ к камере.";
 				INFOPLIST_KEY_UIApplicationSceneManifest_Generation = YES;
 				INFOPLIST_KEY_UIApplicationSupportsIndirectInputEvents = YES;
 				INFOPLIST_KEY_UILaunchScreen_Generation = YES;
-				INFOPLIST_KEY_UISupportedInterfaceOrientations_iPad = "UIInterfaceOrientationPortrait UIInterfaceOrientationPortraitUpsideDown UIInterfaceOrientationLandscapeLeft UIInterfaceOrientationLandscapeRight";
-				INFOPLIST_KEY_UISupportedInterfaceOrientations_iPhone = "UIInterfaceOrientationPortrait UIInterfaceOrientationLandscapeLeft UIInterfaceOrientationLandscapeRight";
+				INFOPLIST_KEY_UIStatusBarStyle = "";
+				INFOPLIST_KEY_UISupportedInterfaceOrientations = UIInterfaceOrientationPortrait;
 				LD_RUNPATH_SEARCH_PATHS = (
 					"$(inherited)",
 					"@executable_path/Frameworks",
@@ -324,6 +382,38 @@
 			defaultConfigurationName = Release;
 		};
 /* End XCConfigurationList section */
+
+/* Begin XCRemoteSwiftPackageReference section */
+		2C3FFCAA2E2271A400E76820 /* XCRemoteSwiftPackageReference "swift-composable-architecture" */ = {
+			isa = XCRemoteSwiftPackageReference;
+			repositoryURL = "https://github.com/pointfreeco/swift-composable-architecture";
+			requirement = {
+				kind = upToNextMajorVersion;
+				minimumVersion = 1.20.2;
+			};
+		};
+		2C3FFCB92E227EE300E76820 /* XCRemoteSwiftPackageReference "realm-swift" */ = {
+			isa = XCRemoteSwiftPackageReference;
+			repositoryURL = "https://github.com/realm/realm-swift.git";
+			requirement = {
+				branch = master;
+				kind = branch;
+			};
+		};
+/* End XCRemoteSwiftPackageReference section */
+
+/* Begin XCSwiftPackageProductDependency section */
+		2C3FFCAB2E2271A500E76820 /* ComposableArchitecture */ = {
+			isa = XCSwiftPackageProductDependency;
+			package = 2C3FFCAA2E2271A400E76820 /* XCRemoteSwiftPackageReference "swift-composable-architecture" */;
+			productName = ComposableArchitecture;
+		};
+		2CD5EAE52E22E53B001225A8 /* RealmSwift */ = {
+			isa = XCSwiftPackageProductDependency;
+			package = 2C3FFCB92E227EE300E76820 /* XCRemoteSwiftPackageReference "realm-swift" */;
+			productName = RealmSwift;
+		};
+/* End XCSwiftPackageProductDependency section */
 	};
 	rootObject = 2C3FFC942E20235D00E76820 /* Project object */;
 }
