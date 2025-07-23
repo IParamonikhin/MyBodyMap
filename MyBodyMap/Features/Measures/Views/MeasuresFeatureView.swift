@@ -15,7 +15,7 @@ public struct MeasuresView: View {
     public var body: some View {
         NavigationView {
             ZStack{
-                Color("backgroundColor")
+                Color("BGColor")
                     .ignoresSafeArea()
                 
                 VStack(spacing: 0) {

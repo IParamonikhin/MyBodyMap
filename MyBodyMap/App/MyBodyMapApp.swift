@@ -7,9 +7,19 @@
 
 import SwiftUI
 import ComposableArchitecture
+import RealmSwift
 
 @main
-struct MyBodyMapApp: App {
+struct MyBodyMapApp: SwiftUI.App {
+    init() {
+        let config = Realm.Configuration(
+            schemaVersion: 2,
+            migrationBlock: { migration, oldSchemaVersion in
+                // migration logic if needed
+            }
+        )
+        Realm.Configuration.defaultConfiguration = config
+    }
     var body: some Scene {
         WindowGroup {
             MyBodyMapRootView()

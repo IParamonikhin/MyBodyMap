@@ -47,7 +47,7 @@ struct BodySilhouetteView: View {
                     .blur(radius: 8)
                     .aspectRatio(0.45, contentMode: .fit)
                 fillShape
-                    .fill(Color("bodyColor2"))
+                    .fill(Color("BodyColor"))
                     .aspectRatio(0.45, contentMode: .fit)
                 ForEach(bodyPoints) { point in
                     Button(action: { onSelect(point.id) }) {
@@ -58,7 +58,7 @@ struct BodySilhouetteView: View {
             }
         }
         .padding(.horizontal, 16)
-        .background(Color("backgroundColor"))
+        .background(Color("BGColor"))
     }
 }
 

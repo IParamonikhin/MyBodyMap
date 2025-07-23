@@ -19,7 +19,7 @@ struct TrendsChart: View {
             .interpolationMethod(.catmullRom)
             .foregroundStyle(Gradient(colors: [.green, .blue]))
         }
-        .foregroundStyle(Color("textfieldColor"))
+        .foregroundStyle(Color("FontColor"))
     }
 }
 

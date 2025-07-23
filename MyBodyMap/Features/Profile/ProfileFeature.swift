@@ -18,6 +18,7 @@ public struct ProfileFeature {
         public var age: Int {
             Calendar.current.dateComponents([.year], from: birthdate, to: .now).year ?? 0
         }
+        public var goal: Goal = .none
     }
 
     public enum Action: BindableAction {
@@ -27,11 +28,19 @@ public struct ProfileFeature {
         case loaded(State)
     }
 
-    public enum Gender: String, CaseIterable, Equatable, Identifiable {
+    public enum Gender: String, Equatable, Identifiable {
         case male, female, other
         public var id: String { self.rawValue }
+        
+        static var selectable: [Gender] { [.male, .female] }
     }
 
+    
+    public enum Goal: String, CaseIterable, Equatable, Identifiable {
+        case none, looseWeight, gainWeight, gainMuscle
+        public var id: String { rawValue }
+    }
+    
     @Dependency(\.profileService) var profileService
 
     public var body: some ReducerOf<Self> {

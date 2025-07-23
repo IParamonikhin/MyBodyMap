@@ -13,4 +13,6 @@ class Profile: Object {
     @objc dynamic var name: String = ""
     @objc dynamic var gender: String = "other"
     @objc dynamic var birthdate: Date = Date()
+    @objc dynamic var goal: String = "none"
 }
+

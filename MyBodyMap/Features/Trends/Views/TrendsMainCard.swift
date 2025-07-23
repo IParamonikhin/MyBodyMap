@@ -18,7 +18,7 @@ struct TrendsMainCard: View {
             VStack(alignment: .leading, spacing: 8) {
                 Text("Избранные измерения")
                     .font(.headline)
-                    .foregroundColor(Color("textfieldColor"))
+                    .foregroundColor(Color("FontColor"))
                     .padding(.leading, 4)
                 LazyVGrid(columns: columns, spacing: 12) {
                     ForEach(store.mainTrends.prefix(6)) { trend in
@@ -37,7 +37,7 @@ struct TrendsMainCard: View {
                         store.send(.showAllTrends(true))
                     }
                     .font(.subheadline)
-                    .foregroundColor(Color("textfieldColor"))
+                    .foregroundColor(Color("FontColor"))
                     .padding(.top, 4)
                 }
             }

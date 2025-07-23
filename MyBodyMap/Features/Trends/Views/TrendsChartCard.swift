@@ -13,21 +13,22 @@ struct TrendsChartCard: View {
     var body: some View {
         CardView {
             VStack(alignment: .leading) {
-                Text(TrendsFeatureView.labelStatic(for: store.selectedField)).font(.title2.bold())
-                    .foregroundStyle(Color("textfieldColor"))
+                Text(store.state.selectedField)
+                    .font(.title2.bold())
+                    .foregroundStyle(Color("FontColor"))
                 if !store.fieldTrends.isEmpty {
                     TrendsChart(fieldTrends: store.fieldTrends)
                         .frame(height: 120)
                         .padding(.vertical, 4)
                 }
                 HStack {
-                    Text(TrendsFeatureView.formatValueStatic(store.fieldTrends.last?.value))
+                    Text(store.fieldTrends.last?.formatValue ?? "–")
                         .font(.largeTitle.bold())
-                        .foregroundStyle(Color("textfieldColor"))
+                        .foregroundStyle(Color("FontColor"))
                     Spacer()
                     if let diff = store.fieldTrends.last?.diff {
-                        Text(diff > 0 ? "▲ \(TrendsFeatureView.formatValueStatic(diff))" :
-                             diff < 0 ? "▼ \(TrendsFeatureView.formatValueStatic(abs(diff)))" : "—")
+                        Text(diff > 0 ? "▲ \(store.fieldTrends.last?.formatValueDiff ?? "")"
+                             : diff < 0 ? "▼ \(store.fieldTrends.last?.formatValueDiff ?? "")" : "—")
                             .foregroundColor(diff > 0 ? .green : diff < 0 ? .red : .gray)
                             .font(.title2.bold())
                     }
