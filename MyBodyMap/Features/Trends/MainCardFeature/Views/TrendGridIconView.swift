@@ -42,7 +42,3 @@ struct TrendGridIconView: View {
         .padding(2)
     }
 }
-
-//#Preview {
-//    TrendGridIconView()
-//}
