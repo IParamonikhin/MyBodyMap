@@ -28,18 +28,25 @@ struct MyBodyMapApp: SwiftUI.App {
 }
 
 struct MyBodyMapRootView: View {
+    @State private var selectedTab = 0
+    
     var body: some View {
         TabView {
-            MeasuresView(store: Store(initialState: MeasuresFeature.State()) { MeasuresFeature() })
-                .tabItem { Label("Измерения", systemImage: "ruler") }
-            PhotoView(store: Store(initialState: PhotoFeature.State()) { PhotoFeature() })
-                .tabItem { Label("Фото", systemImage: "photo.on.rectangle") }
-            TrendsFeatureView(store: Store(initialState: TrendsFeature.State()) { TrendsFeature() })
-                .tabItem { Label("Тренды", systemImage: "chart.line.uptrend.xyaxis") }
-            WaterTrackerView(store: Store(initialState: WaterTrackerFeature.State()) { WaterTrackerFeature() })
-                .tabItem { Label("Вода", systemImage: "drop.fill") }
-            ProfileView(store: Store(initialState: ProfileFeature.State()) { ProfileFeature() })
-                .tabItem { Label("Профиль", systemImage: "person.fill") }
+            Tab("Измерения", systemImage: "ruler") {
+                MeasuresView(store: Store(initialState: MeasuresFeature.State()) { MeasuresFeature() })
+            }
+            Tab("Фото", systemImage: "photo.on.rectangle") {
+                PhotoView(store: Store(initialState: PhotoFeature.State()) { PhotoFeature() })
+            }
+            Tab("Тренды", systemImage: "chart.line.uptrend.xyaxis") {
+                TrendsFeatureView(store: Store(initialState: TrendsFeature.State()) { TrendsFeature() })
+            }
+            Tab("Вода", systemImage: "drop.fill") {
+                WaterTrackerView(store: Store(initialState: WaterTrackerFeature.State()) { WaterTrackerFeature() })
+            }
+            Tab("Профиль", systemImage: "person.fill") {
+                ProfileView(store: Store(initialState: ProfileFeature.State()) { ProfileFeature() })
+            }
         }
     }
 }

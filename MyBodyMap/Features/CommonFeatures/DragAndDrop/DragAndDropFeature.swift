@@ -23,6 +23,7 @@ public struct DragAndDropFeature<Item: Identifiable & Equatable> {
         case dragStarted(Item.ID)
         case dragMoved(from: Int, to: Int)
         case dragEnded
+        case setItems([Item])
     }
 
     public var body: some ReducerOf<Self> {
@@ -38,6 +39,9 @@ public struct DragAndDropFeature<Item: Identifiable & Equatable> {
                 return .none
             case .dragEnded:
                 state.draggingID = nil
+                return .none
+            case let .setItems(newItems):
+                state.items = newItems
                 return .none
             }
         }

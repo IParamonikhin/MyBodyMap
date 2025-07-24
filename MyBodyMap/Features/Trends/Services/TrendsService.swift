@@ -25,7 +25,7 @@ final class TrendsRealmService: TrendsStoring {
         for m in measures {
             let val = valueForField(field, in: m)
             let diff = prev != nil ? val - prev! : 0
-            trends.append(TrendItem(date: m.date, value: val, field: field, diff: diff))
+            trends.append(TrendItem(id: UUID(), field: field, value: val, date: m.date, diff: diff))
             prev = val
         }
         return trends
@@ -39,7 +39,7 @@ final class TrendsRealmService: TrendsStoring {
             let trends = loadTrends(for: field)
             let last = trends.last
             let diff = (trends.count > 1) ? (trends.last!.value - trends[trends.count-2].value) : 0
-            return TrendItem(date: last?.date ?? Date(), value: last?.value ?? 0, field: field, diff: diff)
+            return TrendItem(id: UUID(), field: field, value: last?.value ?? 0, date: last?.date ?? Date(),  diff: diff)
         }
     }
 

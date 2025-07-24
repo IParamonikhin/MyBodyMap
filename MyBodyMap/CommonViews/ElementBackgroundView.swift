@@ -7,12 +7,23 @@
 
 import SwiftUI
 
-struct ElementBackgroundView: View {
-    var body: some View {
-        Text(/*@START_MENU_TOKEN@*/"Hello, World!"/*@END_MENU_TOKEN@*/)
-    }
-}
+struct ElementBackgroundView<Content: View>: View {
+    let height: CGFloat
+    let content: Content
 
-#Preview {
-    ElementBackgroundView()
+    init(height: CGFloat = 48, @ViewBuilder content: () -> Content) {
+        self.height = height
+        self.content = content()
+    }
+
+    var body: some View {
+        ZStack {
+            RoundedRectangle(cornerRadius: 12, style: .continuous)
+                .fill(Color("TextfieldColor"))
+                .frame(height: height)
+            content
+                .padding(.horizontal, 12)
+        }
+        .padding(.horizontal, 4)
+    }
 }
