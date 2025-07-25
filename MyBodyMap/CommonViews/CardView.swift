@@ -12,12 +12,8 @@ struct CardView<Content: View>: View {
     var body: some View {
         VStack { content() }
             .padding()
-            .background(Color("bodyColor"))
+            .background(Color("ContrastColor"))
             .cornerRadius(20)
             .shadow(color: Color.black.opacity(0.07), radius: 8, x: 0, y: 2)
     }
 }
-
-//#Preview {
-//    CardView()
-//}

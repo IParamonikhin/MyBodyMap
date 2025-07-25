@@ -22,3 +22,32 @@ public struct TrendItem: Identifiable, Equatable/*, Hashable, Codable */{
         self.diff = diff
     }
 }
+
+extension TrendItem {
+    var label: String {
+        switch field {
+        case "weight": return "Вес"
+        case "chest": return "Грудь"
+        case "waist": return "Талия"
+        case "forearm": return "Предплечье"
+        case "biceps": return "Бицепс"
+        case "neck": return "Шея"
+        case "shoulders": return "Плечи"
+        case "thigh": return "Бедро"
+        case "buttocks": return "Ягодицы"
+        case "calf": return "Икра"
+        case "stomach": return "Живот"
+        case "height": return "Рост"
+        case "fatPercent": return "% Жира"
+        default: return field
+        }
+    }
+
+    var formatValue: String {
+        String(format: "%.1f", value)
+    }
+
+    var formatValueDiff: String {
+        String(format: "%.1f", abs(diff))
+    }
+}

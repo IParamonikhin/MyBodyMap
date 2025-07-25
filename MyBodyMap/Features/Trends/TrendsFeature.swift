@@ -17,10 +17,10 @@ public struct TrendsFeature {
         public var fieldTrends: [TrendItem] = []
         public var selectedField: String = "weight"
         public var showAllTrends: Bool = false
-        // DragAndDrop state
         public var dragState: DragAndDropFeature<TrendItem>.State = .init(items: [])
-
-        public init() {} // Add an initializer for easier State creation if needed elsewhere
+        public var mainCardState: TrendsMainCardFeature.State = .init()
+        public var chartState = ChartFeature.State()
+        public init() {}
     }
 
     public enum Action: BindableAction {
@@ -30,36 +30,39 @@ public struct TrendsFeature {
         case selectField(String)
         case showAllTrends(Bool)
         case dragAndDrop(DragAndDropFeature<TrendItem>.Action)
+        case mainCard(TrendsMainCardFeature.Action)
+        case updateTrendsOrder([UUID])
+        case chart(ChartFeature.Action)
     }
 
     @Dependency(\.trendsService) var trendsService
 
     public var body: some ReducerOf<Self> {
-        BindingReducer() // Keeps your @BindingState properties in sync
-
-        Scope(state: \.dragState, action: \.dragAndDrop) {
-            DragAndDropFeature<TrendItem>()
-        }
-
+        BindingReducer()
+        Scope(state: \.dragState, action: \.dragAndDrop) { DragAndDropFeature<TrendItem>() }
+        Scope(state: \.mainCardState, action: \.mainCard) { TrendsMainCardFeature() }
+        Scope(state: \.chartState, action: \.chart) { ChartFeature() }
         Reduce { state, action in
             switch action {
             case .binding:
-                return .none // BindingReducer handles this
+                return .none
 
             case .load:
                 let items = trendsService.loadAllTrends()
                 state.allTrends = items
-                state.mainTrends = Array(items.prefix(6))
-                state.dragState.items = items // Initialize drag-and-drop items
+                let first6 = Array(items.prefix(6))
+                state.mainTrends = first6
+                state.dragState.items = items
                 state.fieldTrends = trendsService.loadTrends(for: state.selectedField)
-                return .none
+                return .send(.mainCard(.setTrends(first6)))
 
             case let .loaded(items):
                 state.allTrends = items
-                state.mainTrends = Array(items.prefix(6))
+                let first6 = Array(items.prefix(6))
+                state.mainTrends = first6
                 state.dragState.items = items
                 state.fieldTrends = trendsService.loadTrends(for: state.selectedField)
-                return .none
+                return .send(.mainCard(.setTrends(first6)))
 
             case let .selectField(field):
                 state.selectedField = field
@@ -71,17 +74,28 @@ public struct TrendsFeature {
                 return .none
 
             case .dragAndDrop(.dragEnded):
-                // When drag ends in the child, update parent's trend lists
                 state.allTrends = state.dragState.items
-                state.mainTrends = Array(state.dragState.items.prefix(6))
-                // Recalculate fieldTrends based on the potentially reordered allTrends or a specific service call
-                state.fieldTrends = trendsService.loadTrends(for: state.selectedField) // Assuming this uses the internal allTrends or is independent
-                return .none
+                let first6 = Array(state.dragState.items.prefix(6))
+                state.mainTrends = first6
+                state.fieldTrends = trendsService.loadTrends(for: state.selectedField)
+                return .send(.mainCard(.setTrends(first6)))
 
             case .dragAndDrop:
-                // Other dragAndDrop actions (dragStarted, dragMoved) are handled by the Scope,
-                // and their state changes within dragState will automatically propagate due to @ObservableState.
-                // No further action is needed here unless you want side effects for these specific actions.
+                return .none
+
+            case .mainCard:
+                return .none
+                
+            case let .updateTrendsOrder(newOrderIDs):
+                state.allTrends = newOrderIDs.compactMap { id in
+                    state.allTrends.first(where: { $0.id == id })
+                }
+                state.mainTrends = Array(state.allTrends.prefix(6))
+                state.dragState.items = state.allTrends
+                trendsService.saveOrder(newOrderIDs.map { $0.uuidString })
+                return .none
+                
+            case .chart(_):
                 return .none
             }
         }

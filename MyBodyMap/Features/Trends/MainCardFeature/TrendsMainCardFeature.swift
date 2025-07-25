@@ -14,10 +14,13 @@ public struct TrendsMainCardFeature {
     public struct State: Equatable {
         public var mainTrends: [TrendItem] = []
         public var selectedField: String = ""
+        public var trends: [TrendItem] = []
+        public init(trends: [TrendItem] = []) { self.trends = trends }
     }
 
     public enum Action: BindableAction, Equatable {
         case binding(BindingAction<State>)
+        case setTrends([TrendItem])
         case selectField(String)
     }
 
@@ -29,6 +32,9 @@ public struct TrendsMainCardFeature {
                 return .none
             case .selectField(let field):
                 state.selectedField = field
+                return .none
+            case let .setTrends(trends):
+                state.trends = trends
                 return .none
             }
         }

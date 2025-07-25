@@ -9,6 +9,7 @@ import SwiftUI
 import ComposableArchitecture
 
 struct TrendsMainCardView: View {
+
     @Bindable var store: StoreOf<TrendsMainCardFeature>
     var onShowAll: () -> Void
 
@@ -17,17 +18,14 @@ struct TrendsMainCardView: View {
     var body: some View {
         CardView {
             VStack(alignment: .leading, spacing: 8) {
-                Text("Избранные измерения")
-                    .font(.headline)
-                    .foregroundColor(Color("textfieldColor"))
-                    .padding(.leading, 4)
-
-                LazyVGrid(columns: columns, spacing: 12) {
-                    ForEach(store.mainTrends.prefix(6)) { trend in
+                HStack {
+                    Text("Главные тренды")
+                        .font(.headline)
+                    Spacer()
+                }
+                LazyVGrid(columns: [GridItem(.adaptive(minimum: 100))], spacing: 12) {
+                    ForEach(store.trends) { trend in
                         TrendGridIconView(trend: trend)
-                            .onTapGesture {
-                                store.send(.selectField(trend.field))
-                            }
                     }
                 }
                 .padding(.top, 4)
@@ -37,10 +35,11 @@ struct TrendsMainCardView: View {
                     Spacer()
                     Button("Другие", action: onShowAll)
                         .font(.subheadline)
-                        .foregroundColor(Color("textfieldColor"))
+                        .foregroundColor(Color("FontColor"))
                         .padding(.top, 4)
                 }
             }
         }
+        .padding(.horizontal, 16)
     }
 }
