@@ -12,9 +12,11 @@ import ComposableArchitecture
 protocol MeasuresStoring {
     func save(_ state: MeasuresFeature.State)
     func loadLatest() -> MeasuresFeature.State
+    func deleteMeasure(date: Date) throws
 }
 
 final class MeasuresRealmService: MeasuresStoring {
+    
     func save(_ state: MeasuresFeature.State) {
         let realm = try! Realm()
         let entry = Measures()
@@ -58,6 +60,15 @@ final class MeasuresRealmService: MeasuresStoring {
         state.fatPercent = last.fatPercent
         state.date = last.date
         return state
+    }
+    
+    func deleteMeasure(date: Date) throws {
+        let realm = try Realm()
+        if let object = realm.objects(Measures.self).filter("date == %@", date).first {
+            try realm.write {
+                realm.delete(object)
+            }
+        }
     }
 }
 

@@ -92,6 +92,7 @@ public struct MeasuresFeature {
                 case .height: state.height = value
                 case .fatPercent: state.fatPercent = value
                 }
+                state.date = .now
                 state.showInputModal = false
                 measuresService.save(state)
                 return .none

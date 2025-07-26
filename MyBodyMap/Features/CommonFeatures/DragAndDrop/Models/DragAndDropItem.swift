@@ -7,9 +7,7 @@
 
 import Foundation
 
-protocol DragAndDropIdentifiable: Identifiable, Equatable {}
-
-public struct DragAndDropItem: DragAndDropIdentifiable {
-    public let id: UUID
-    public let title: String
+public struct DragAndDropItem: Equatable, Identifiable {
+    public let id: String
+    public init(id: String) { self.id = id }
 }

@@ -13,37 +13,74 @@ public struct ChartFeature {
     @ObservableState
     public struct State: Equatable {
         public var field: String
-        public var trends: [TrendItem] = []
-        public init(field: String, trends: [TrendItem] = []) {
-            self.field = field
-            self.trends = trends
-        }
+        public var fieldTrends: [TrendItem] = []
     }
-
-    public enum Action: BindableAction {
-        case binding(BindingAction<State>)
-        case load
-        case setTrends([TrendItem])
-    }
-
-    @Dependency(\.trendsService) var trendsService
-
-    public var body: some ReducerOf<Self> {
-        BindingReducer()
-        Reduce { state, action in
-            switch action {
-            case .binding:
-                return .none
-            case .load:
-                state.trends = trendsService.loadTrends(for: state.field)
-                return .none
-            case let .setTrends(items):
-                state.trends = items
-                return .none
-            }
-        }
-    }
+    public enum Action {}
+    public var body: some ReducerOf<Self> { Reduce { _, _ in .none } }
 }
+
+//import ComposableArchitecture
+//import Foundation
+//
+//@Reducer
+//public struct ChartFeature {
+//    @ObservableState
+//    public struct State: Equatable {
+//        public var field: String
+//        public var fieldTrends: [TrendItem] = []
+//        public init(field: String, fieldTrends: [TrendItem] = []) {
+//            self.field = field
+//            self.fieldTrends = fieldTrends
+//        }
+//    }
+//    public enum Action: BindableAction {
+//        case binding(BindingAction<State>)
+//    }
+//    public var body: some ReducerOf<Self> {
+//        BindingReducer()
+//        Reduce { state, action in .none }
+//    }
+//}
+
+//import ComposableArchitecture
+//import Foundation
+//
+//@Reducer
+//public struct ChartFeature {
+//    @ObservableState
+//    public struct State: Equatable {
+//        public var field: String
+//        public var trends: [TrendItem] = []
+//        public init(field: String, trends: [TrendItem] = []) {
+//            self.field = field
+//            self.trends = trends
+//        }
+//    }
+//
+//    public enum Action: BindableAction {
+//        case binding(BindingAction<State>)
+//        case load
+//        case setTrends([TrendItem])
+//    }
+//
+//    @Dependency(\.trendsService) var trendsService
+//
+//    public var body: some ReducerOf<Self> {
+//        BindingReducer()
+//        Reduce { state, action in
+//            switch action {
+//            case .binding:
+//                return .none
+//            case .load:
+//                state.trends = trendsService.loadTrends(for: state.field)
+//                return .none
+//            case let .setTrends(items):
+//                state.trends = items
+//                return .none
+//            }
+//        }
+//    }
+//}
 
 //import ComposableArchitecture
 //import Foundation

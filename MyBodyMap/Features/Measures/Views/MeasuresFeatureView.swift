@@ -13,7 +13,7 @@ public struct MeasuresView: View {
     public init(store: StoreOf<MeasuresFeature>) { self.store = store }
 
     public var body: some View {
-        NavigationView {
+        NavigationStack {
             ZStack{
                 Color("BGColor")
                     .ignoresSafeArea()

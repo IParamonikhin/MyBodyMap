@@ -6,75 +6,115 @@
 //
 
 import SwiftUI
-import Charts
 import ComposableArchitecture
+import Charts
 
 public struct ChartFeatureView: View {
-    @Bindable var store: StoreOf<ChartFeature>
-    public init(store: StoreOf<ChartFeature>) { self.store = store }
+    let store: StoreOf<ChartFeature>
+
+    public init(store: StoreOf<ChartFeature>) {
+        self.store = store
+    }
 
     public var body: some View {
         CardView {
-            VStack(alignment: .leading, spacing: 12) {
-                HStack {
-                    Text(label(for: store.field))
-                        .font(.title2.bold())
-                        .foregroundColor(Color("FontColor"))
-                    Spacer()
-                }
-
-                if !store.trends.isEmpty {
-                    Chart(store.trends) { item in
-                        LineMark(
-                            x: .value("Date", item.date),
-                            y: .value("Value", item.value)
-                        )
-                        .interpolationMethod(.catmullRom)
-                        .foregroundStyle(Color.accentColor)
-                    }
+            if store.fieldTrends.isEmpty {
+                Text("Нет данных для графика")
+                    .foregroundColor(.secondary)
                     .frame(height: 120)
-                } else {
-                    Text("Нет данных для графика")
-                        .foregroundColor(.secondary)
-                        .frame(height: 120)
-                }
-
-                HStack {
-                    Text(store.trends.last?.formatValue ?? "–")
-                        .font(.largeTitle.bold())
-                        .foregroundColor(Color("FontColor"))
-                    Spacer()
-                    if let diff = store.trends.last?.diff {
-                        Text(diff > 0 ? "▲ \(store.trends.last?.formatValueDiff ?? "")" :
-                             diff < 0 ? "▼ \(store.trends.last?.formatValueDiff ?? "")" : "—")
-                            .foregroundColor(diff > 0 ? .green : diff < 0 ? .red : .gray)
-                            .font(.title2.bold())
+            } else {
+                Chart {
+                    ForEach(store.fieldTrends) { trend in
+                        LineMark(
+                            x: .value("Дата", trend.date),
+                            y: .value("Значение", trend.value)
+                        )
+                        PointMark(
+                            x: .value("Дата", trend.date),
+                            y: .value("Значение", trend.value)
+                        )
                     }
                 }
+                .chartXAxis {
+                    AxisMarks(preset: .aligned, values: .stride(by: .day, count: 7))
+                }
+                .frame(height: 160)
             }
         }
-        .onAppear { store.send(.load) }
-    }
-
-    private func label(for field: String) -> String {
-        switch field {
-        case "weight": return "Вес"
-        case "chest": return "Грудь"
-        case "waist": return "Талия"
-        case "forearm": return "Предплечье"
-        case "biceps": return "Бицепс"
-        case "neck": return "Шея"
-        case "shoulders": return "Плечи"
-        case "thigh": return "Бедро"
-        case "buttocks": return "Ягодицы"
-        case "calf": return "Икра"
-        case "stomach": return "Живот"
-        case "height": return "Рост"
-        case "fatPercent": return "% Жира"
-        default: return field
-        }
+        .padding(.horizontal)
     }
 }
+
+//import SwiftUI
+//import Charts
+//import ComposableArchitecture
+//
+//public struct ChartFeatureView: View {
+//    @Bindable var store: StoreOf<ChartFeature>
+//    public init(store: StoreOf<ChartFeature>) { self.store = store }
+//
+//    public var body: some View {
+//        CardView {
+//            VStack(alignment: .leading, spacing: 12) {
+//                HStack {
+//                    Text(label(for: store.field))
+//                        .font(.title2.bold())
+//                        .foregroundColor(Color("FontColor"))
+//                    Spacer()
+//                }
+//
+//                if !store.trends.isEmpty {
+//                    Chart(store.trends) { item in
+//                        LineMark(
+//                            x: .value("Date", item.date),
+//                            y: .value("Value", item.value)
+//                        )
+//                        .interpolationMethod(.catmullRom)
+//                        .foregroundStyle(Color.accentColor)
+//                    }
+//                    .frame(height: 120)
+//                } else {
+//                    Text("Нет данных для графика")
+//                        .foregroundColor(.secondary)
+//                        .frame(height: 120)
+//                }
+//
+//                HStack {
+//                    Text(store.trends.last?.formatValue ?? "–")
+//                        .font(.largeTitle.bold())
+//                        .foregroundColor(Color("FontColor"))
+//                    Spacer()
+//                    if let diff = store.trends.last?.diff {
+//                        Text(diff > 0 ? "▲ \(store.trends.last?.formatValueDiff ?? "")" :
+//                             diff < 0 ? "▼ \(store.trends.last?.formatValueDiff ?? "")" : "—")
+//                            .foregroundColor(diff > 0 ? .green : diff < 0 ? .red : .gray)
+//                            .font(.title2.bold())
+//                    }
+//                }
+//            }
+//        }
+//        .onAppear { store.send(.load) }
+//    }
+//
+//    private func label(for field: String) -> String {
+//        switch field {
+//        case "weight": return "Вес"
+//        case "chest": return "Грудь"
+//        case "waist": return "Талия"
+//        case "forearm": return "Предплечье"
+//        case "biceps": return "Бицепс"
+//        case "neck": return "Шея"
+//        case "shoulders": return "Плечи"
+//        case "thigh": return "Бедро"
+//        case "buttocks": return "Ягодицы"
+//        case "calf": return "Икра"
+//        case "stomach": return "Живот"
+//        case "height": return "Рост"
+//        case "fatPercent": return "% Жира"
+//        default: return field
+//        }
+//    }
+//}
 
 //import SwiftUI
 //import Charts
