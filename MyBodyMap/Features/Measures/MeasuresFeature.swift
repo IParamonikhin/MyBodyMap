@@ -7,104 +7,107 @@
 
 import ComposableArchitecture
 import Foundation
+import RealmSwift
 
 @Reducer
 public struct MeasuresFeature {
     @ObservableState
     public struct State: Equatable {
-        public var gender: ProfileFeature.Gender = .other
-        public var forearm: Double?
-        public var biceps: Double?
-        public var neck: Double?
-        public var chest: Double?
-        public var shoulders: Double?
-        public var waist: Double?
-        public var hips: Double?
-        public var thigh: Double?
-        public var buttocks: Double?
-        public var calf: Double?
-        public var stomach: Double?
-        public var weight: Double?
-        public var height: Double?
-        public var fatPercent: Double?
-        public var date: Date = .now
-
-        public var selectedField: MeasuresField? = nil
+        public var selectedField: MeasuresField?
+        public var inputValue: Double = 0
+        public var inputDate: Date = .now
         public var showInputModal: Bool = false
-
-        public var bmi: Double? {
-            guard let w = weight, let h = height, h > 0 else { return nil }
-            return w / ((h / 100) * (h / 100))
-        }
+        public var measuresByType: [String: [Measure]] = [:]
+        public var latestMeasures: [String: Measure] = [:]
+        public var gender: ProfileFeature.Gender = .other
     }
 
     public enum Action: BindableAction {
         case binding(BindingAction<State>)
-        case save
-        case load
-        case loaded(State)
+        case loadAll
+        case addMeasure(String, Double, Date)
+        case updateMeasure(ObjectId, Double, Date)
+        case deleteMeasure(ObjectId)
         case selectField(MeasuresField)
-        case dismissInput
-        case updateField(MeasuresField, Double)
-    }
-
-    public enum MeasuresField: String, CaseIterable, Equatable, Identifiable {
-        case forearm, biceps, neck, chest, shoulders, waist, hips, thigh, buttocks, calf, stomach, weight, height, fatPercent
-        public var id: String { self.rawValue }
+        case showInput(Bool)
+        case loadGender
     }
 
     @Dependency(\.measuresService) var measuresService
+    @Dependency(\.profileService) var profileService
 
     public var body: some ReducerOf<Self> {
         BindingReducer()
         Reduce { state, action in
             switch action {
-            case .binding:
-                return .none
-            case .save:
-                measuresService.save(state)
-                return .none
-            case .load:
-                let loaded = measuresService.loadLatest()
-                state = loaded
-                let raw = UserDefaults.standard.string(forKey: "profile.gender") ?? "other"
-                state.gender = ProfileFeature.Gender(rawValue: raw) ?? .other
-                return .none
-            case .loaded(let loaded):
-                state = loaded
-                let raw = UserDefaults.standard.string(forKey: "profile.gender") ?? "other"
-                state.gender = ProfileFeature.Gender(rawValue: raw) ?? .other
-                return .none
-            case let .updateField(field, value):
-                switch field {
-                case .forearm: state.forearm = value
-                case .biceps: state.biceps = value
-                case .neck: state.neck = value
-                case .chest: state.chest = value
-                case .shoulders: state.shoulders = value
-                case .waist: state.waist = value
-                case .hips: state.hips = value
-                case .thigh: state.thigh = value
-                case .buttocks: state.buttocks = value
-                case .calf: state.calf = value
-                case .stomach: state.stomach = value
-                case .weight: state.weight = value
-                case .height: state.height = value
-                case .fatPercent: state.fatPercent = value
+            case .loadAll:
+                let types = MeasuresField.allCases.map(\.rawValue)
+                for type in types {
+                    state.measuresByType[type] = measuresService.loadAll(for: type)
+                    if let last = measuresService.loadLatest(for: type) {
+                        state.latestMeasures[type] = last
+                    }
                 }
-                state.date = .now
-                state.showInputModal = false
-                measuresService.save(state)
                 return .none
+
+            case .loadGender:
+                let loadedProfile = profileService.load()
+                state.gender = loadedProfile.gender
+                return .none
+
+            case let .addMeasure(type, value, date):
+                let measure = Measure()
+                measure.type = type
+                measure.value = value
+                measure.date = date
+                measuresService.save(measure)
+                return .send(.loadAll)
+
+            case let .updateMeasure(id, value, date):
+                measuresService.update(id, value: value, date: date, note: nil)
+                return .send(.loadAll)
+
+            case let .deleteMeasure(id):
+                measuresService.delete(id)
+                return .send(.loadAll)
+
             case let .selectField(field):
                 state.selectedField = field
                 state.showInputModal = true
+                state.inputValue = state.latestMeasures[field.rawValue]?.value ?? 0
+                state.inputDate = .now
                 return .none
-            case .dismissInput:
-                state.showInputModal = false
+
+            case let .showInput(show):
+                state.showInputModal = show
+                return .none
+
+            default:
                 return .none
             }
         }
     }
-}
+    
+    public enum MeasuresField: String, CaseIterable {
+        case forearm, biceps, neck, chest, shoulders, waist, hips, thigh, buttocks, calf, stomach, weight, height, fatPercent
 
+        var label: String {
+            switch self {
+            case .forearm: return "Предплечье"
+            case .biceps: return "Бицепс"
+            case .neck: return "Шея"
+            case .chest: return "Грудь"
+            case .shoulders: return "Плечи"
+            case .waist: return "Талия"
+            case .hips: return "Бёдра"
+            case .thigh: return "Бедро"
+            case .buttocks: return "Ягодицы"
+            case .calf: return "Икра"
+            case .stomach: return "Живот"
+            case .weight: return "Вес"
+            case .height: return "Рост"
+            case .fatPercent: return "% Жира"
+            }
+        }
+    }
+}

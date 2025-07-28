@@ -8,68 +8,160 @@
 import Foundation
 import RealmSwift
 import ComposableArchitecture
+import HealthKit
 
 protocol MeasuresStoring {
-    func save(_ state: MeasuresFeature.State)
-    func loadLatest() -> MeasuresFeature.State
-    func deleteMeasure(date: Date) throws
+    func save(_ measure: Measure)
+    func loadAll(for type: String) -> [Measure]
+    func loadLatest(for type: String) -> Measure?
+    func loadLatestAllTypes() -> [String: Measure]
+    func update(_ id: ObjectId, value: Double, date: Date, note: String?)
+    func delete(_ id: ObjectId)
 }
 
 final class MeasuresRealmService: MeasuresStoring {
     
-    func save(_ state: MeasuresFeature.State) {
+    
+    func save(_ measure: Measure) {
         let realm = try! Realm()
-        let entry = Measures()
-        entry.date = state.date
-        entry.forearm = state.forearm ?? 0
-        entry.biceps = state.biceps ?? 0
-        entry.neck = state.neck ?? 0
-        entry.chest = state.chest ?? 0
-        entry.shoulders = state.shoulders ?? 0
-        entry.waist = state.waist ?? 0
-        entry.hips = state.hips ?? 0
-        entry.thigh = state.thigh ?? 0
-        entry.buttocks = state.buttocks ?? 0
-        entry.calf = state.calf ?? 0
-        entry.stomach = state.stomach ?? 0
-        entry.weight = state.weight ?? 0
-        entry.height = state.height ?? 0
-        entry.fatPercent = state.fatPercent ?? 0
-        try! realm.write { realm.add(entry) }
-    }
-    func loadLatest() -> MeasuresFeature.State {
-        let realm = try! Realm()
-        print (realm.configuration.fileURL)
-        guard let last = realm.objects(Measures.self).sorted(byKeyPath: "date", ascending: false).last else {
-            return .init()
+        try! realm.write {
+            realm.add(measure)
+//            print (realm.configuration.fileURL)
         }
-        var state = MeasuresFeature.State()
-        state.forearm = last.forearm
-        state.biceps = last.biceps
-        state.neck = last.neck
-        state.chest = last.chest
-        state.shoulders = last.shoulders
-        state.waist = last.waist
-        state.hips = last.hips
-        state.thigh = last.thigh
-        state.buttocks = last.buttocks
-        state.calf = last.calf
-        state.stomach = last.stomach
-        state.weight = last.weight
-        state.height = last.height
-        state.fatPercent = last.fatPercent
-        state.date = last.date
-        return state
+        if measure.type == "weight" || measure.type == "height" {
+            updateBMIIfNeeded()
+        }
+        if measure.type == "weight" {
+            HealthKitServices.shared.save(
+                HealthKitServices.shared.weightType,
+                value: measure.value,
+                date: measure.date,
+                unit: .gramUnit(with: .kilo)
+            )
+        }
+        if measure.type == "height" {
+            HealthKitServices.shared.save(
+                HealthKitServices.shared.heightType,
+                value: measure.value,
+                date: measure.date,
+                unit: .meterUnit(with: .centi)
+            )
+        }
+        if measure.type == "bmi" {
+            HealthKitServices.shared.save(
+                HealthKitServices.shared.bmiType,
+                value: measure.value,
+                date: measure.date,
+                unit: HKUnit.count()
+            )
+        }
     }
     
-    func deleteMeasure(date: Date) throws {
-        let realm = try Realm()
-        if let object = realm.objects(Measures.self).filter("date == %@", date).first {
-            try realm.write {
-                realm.delete(object)
+    func loadAll(for type: String) -> [Measure] {
+        let realm = try! Realm()
+        return Array(
+            realm.objects(Measure.self)
+                .filter("type == %@", type)
+                .sorted(byKeyPath: "date", ascending: true)
+        )
+    }
+
+    func loadLatest(for type: String) -> Measure? {
+        let realm = try! Realm()
+        return realm.objects(Measure.self)
+            .filter("type == %@", type)
+            .sorted(byKeyPath: "date", ascending: false)
+            .first
+    }
+    
+    func loadLatestAllTypes() -> [String: Measure] {
+        // Последние значения по всем типам
+        let realm = try! Realm()
+        let all = realm.objects(Measure.self).sorted(byKeyPath: "date", ascending: false)
+        var result = [String: Measure]()
+        for item in all {
+            if result[item.type] == nil {
+                result[item.type] = item
+            }
+        }
+        return result
+    }
+    
+    func update(_ id: ObjectId, value: Double, date: Date, note: String?) {
+        let realm = try! Realm()
+        if let obj = realm.object(ofType: Measure.self, forPrimaryKey: id) {
+            try! realm.write {
+                obj.value = value
+                obj.date = date
+                obj.note = note
             }
         }
     }
+    
+    func delete(_ id: ObjectId) {
+        let realm = try! Realm()
+        if let obj = realm.object(ofType: Measure.self, forPrimaryKey: id) {
+            try! realm.write {
+                realm.delete(obj)
+            }
+        }
+    }
+    
+    private func updateBMIIfNeeded() {
+        // Найти последние значения веса и роста
+        guard let weight = loadLatest(for: "weight")?.value,
+              let height = loadLatest(for: "height")?.value,
+              height > 0 else { return }
+
+        let bmiValue = weight / pow(height / 100, 2)
+        let bmiMeasure = Measure()
+        bmiMeasure.type = "bmi"
+        bmiMeasure.value = bmiValue
+        bmiMeasure.date = Date() 
+        let realm = try! Realm()
+        let today = Calendar.current.startOfDay(for: Date())
+        if let old = realm.objects(Measure.self).filter("type == 'bmi' AND date >= %@", today).first {
+            try! realm.write { realm.delete(old) }
+        }
+        try! realm.write { realm.add(bmiMeasure) }
+    }
+    
+    func importLatestFromHealthKit() {
+        HealthKitServices.shared.fetchLatest(HealthKitServices.shared.weightType, unit: .gramUnit(with: .kilo)) { value, date in
+            if let value, let date {
+                DispatchQueue.main.async {
+                    let m = Measure()
+                    m.type = "weight"
+                    m.value = value
+                    m.date = date
+                    self.save(m)
+                }
+            }
+        }
+        HealthKitServices.shared.fetchLatest(HealthKitServices.shared.heightType, unit: .meterUnit(with: .centi)) { value, date in
+            if let value, let date {
+                DispatchQueue.main.async {
+                    let m = Measure()
+                    m.type = "height"
+                    m.value = value
+                    m.date = date
+                    self.save(m)
+                }
+            }
+        }
+        HealthKitServices.shared.fetchLatest(HealthKitServices.shared.bmiType, unit: HKUnit.count()) { value, date in
+            if let value, let date {
+                DispatchQueue.main.async {
+                    let m = Measure()
+                    m.type = "bmi"
+                    m.value = value
+                    m.date = date
+                    self.save(m)
+                }
+            }
+        }
+    }
+    
 }
 
 // DependencyKey для MeasuresStoring

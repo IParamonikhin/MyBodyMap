@@ -16,15 +16,18 @@ public struct ProfileView: View {
     }
 
     public var body: some View {
-        ZStack {
-            Color("BGColor").ignoresSafeArea()
-            VStack {
-                ProfileCardView(store: store)
-                    .padding(.top, 32)
+        NavigationStack{
+            ZStack {
+                Color("BGColor").ignoresSafeArea()
+                VStack {
+                    ProfileCardView(store: store)
+                        .padding(.top, 32)
+                    Spacer()
+                }
             }
+            .navigationTitle("Профиль")
+            .onAppear { store.send(.load) }
         }
-        .navigationTitle("Профиль")
-        .onAppear { store.send(.load) }
     }
 }
 

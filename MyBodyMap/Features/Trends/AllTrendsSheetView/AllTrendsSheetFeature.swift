@@ -18,7 +18,8 @@ public struct AllTrendsSheetFeature {
             set { self.trends = newValue.items }
         }
         @Presents public var allTrendsSheet: AllTrendsSheetFeature.State?
-
+        public var goal: ProfileFeature.Goal = .none
+        
         public init(trends: [TrendItem]) {
             self.trends = trends
         }

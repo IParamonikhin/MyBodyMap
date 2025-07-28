@@ -8,7 +8,7 @@
 import Foundation
 import RealmSwift
 
-class WaterEntry: Object {
+class WaterEntity: Object {
     @objc dynamic var id: String = UUID().uuidString
     @objc dynamic var date: Date = Date()
     @objc dynamic var value: Double = 0

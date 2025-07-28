@@ -19,6 +19,7 @@ public struct TrendsFeatureView: View {
                 VStack(spacing: 20) {
                     TrendsMainCardView(
                         store: store.scope(state: \.mainCard, action: \.mainCard),
+                        selectedField: store.chart.field,
                         onSelectField: { field in store.send(.selectField(field)) },
                         onShowAll: { store.send(.presentAllTrendsSheetButtonTapped) }
                     )
@@ -28,10 +29,14 @@ public struct TrendsFeatureView: View {
                 .padding(.top)
             }
             .navigationTitle("Тренды")
+            .foregroundStyle(Color("FontColor"))
             .navigationDestination(
                 item: $store.scope(state: \.allTrendsSheet, action: \.allTrendsSheet)
             ) { allTrendsStore in
-                AllTrendsSheetView(store: allTrendsStore)
+                AllTrendsSheetView(
+                    store: allTrendsStore,
+                    selectedField: store.chart.field
+                )
             }
             .sheet(store: store.scope(state: \.$modal, action: \.modal)) { store in
                 TrendModalFeatureView(store: store)
@@ -42,33 +47,4 @@ public struct TrendsFeatureView: View {
         }
     }
     
-//    public var body: some View {
-//        NavigationStack {
-//            ZStack {
-//                Color("BGColor").ignoresSafeArea()
-//                VStack(spacing: 20) {
-//                    TrendsMainCardView(
-//                        store: store.scope(state: \.mainCard, action: \.mainCard),
-//                        onSelectField: { field in store.send(.selectField(field)) },
-//                        onShowAll: { store.send(.presentAllTrendsSheetButtonTapped) }
-//                    )
-//                    
-//                    ChartFeatureView(store: store.scope(state: \.chart, action: \.chart))
-//                    
-//                    Spacer()
-//                }
-//                .padding(.top)
-//            }
-//            .navigationTitle("Тренды")
-//            .sheet(store: store.scope(state: \.$allTrendsSheet, action: \.allTrendsSheet)) { store in
-//                AllTrendsSheetView(store: store)
-//            }
-//            .sheet(store: store.scope(state: \.$modal, action: \.modal)) { store in
-//                TrendModalFeatureView(store: store)
-//            }
-//            .onAppear {
-//                store.send(.onAppear)
-//            }
-//        }
-//    }
 }

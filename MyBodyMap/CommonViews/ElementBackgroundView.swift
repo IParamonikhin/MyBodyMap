@@ -24,6 +24,6 @@ struct ElementBackgroundView<Content: View>: View {
             content
                 .padding(.horizontal, 12)
         }
-        .padding(.horizontal, 4)
     }
 }
+

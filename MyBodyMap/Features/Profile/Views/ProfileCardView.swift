@@ -17,68 +17,61 @@ struct ProfileCardView: View {
                 HStack(spacing: 12) {
                     Image(systemName: store.gender == .female ? "person.fill" : "person.fill")
                         .font(.system(size: 44))
-                        .foregroundColor(Color("ContrastColor"))
+                        .foregroundStyle(Color("ContrastColor"))
                     ElementBackgroundView{
                         TextField("Имя", text: $store.name)
                             .padding(.horizontal, 12)
-                            .foregroundColor(Color("FontColor"))
+                            .foregroundStyle(Color("FontColor"))
                             .font(.system(size: 18, weight: .medium))
                         
                     }
                 }
                 ElementBackgroundView{
-                    Picker("Пол", selection: $store.gender) {
-                        ForEach(ProfileFeature.Gender.selectable, id: \.self) { g in
-                            Text(genderLabel(for: g))
-                                .tag(g)
-                        }
-                    }
-                    .tint(Color("FontContrastColor"))
-                    .pickerStyle(.segmented)
-                    .padding(.horizontal, 12)
-                    .foregroundStyle(Color("FontColor"))
+                    CustomSegmentedPickerView(selection: $store.gender, items: ProfileFeature.Gender.selectable)
+                    .padding(.horizontal, 4)
                 }
                 
-                ElementBackgroundView{
-                    HStack{
-                        Text("Дата рождения")
-                            .foregroundColor(Color("FontColor"))
-                        DatePicker(
-                            "Дата рождения",
-                            selection: $store.birthdate,
-                            displayedComponents: .date
-                        )
-                        .datePickerStyle(.compact)
-                        .labelsHidden() // убирает системный лейбл, если не нужен
-                        .padding(.horizontal, 12)
-                        .foregroundColor(Color("FontColor")) // цвет текста
+                ElementBackgroundView {
+                    GeometryReader { geo in
+                        HStack(spacing: 0) {
+                            Text("Дата рождения")
+                                .font(.system(size: 16, weight: .semibold))
+                                .foregroundStyle(Color("FontColor"))
+                                .frame(width: geo.size.width * 0.5)
+                                .multilineTextAlignment(.center)
+                            CustomDatePicker(selectedDate: $store.birthdate)
+                                .frame(width: geo.size.width * 0.5, alignment: .trailing)
+                                .padding(.trailing, 8)
+                        }
+                        .frame(width: geo.size.width, height: geo.size.height)
                     }
+                    .frame(height: 48)
                 }
                 
-                ElementBackgroundView{
-                    HStack{
-                        Text("Выбери цель")
-                            .foregroundColor(Color("FontColor"))
-                        Picker("Цель", selection: $store.goal) {
-                            ForEach(ProfileFeature.Goal.allCases, id: \.self) { g in
-                                Text(goalLabel(for: g)).tag(g)
-                            }
+                ElementBackgroundView {
+                    GeometryReader { geo in
+                        HStack(spacing: 0) {
+                            Text("Выбери цель")
+                                .font(.system(size: 16, weight: .semibold))
+                                .foregroundStyle(Color("FontColor"))
+                                .frame(width: geo.size.width * 0.5)
+                                .multilineTextAlignment(.center)
+                            CustomMenuPicker(
+                                title: "Цель",
+                                selection: $store.goal,
+                                options: ProfileFeature.Goal.allCases
+                            )
+                            .frame(width: geo.size.width * 0.5, alignment: .trailing)
+                            .padding(.trailing, 8)
                         }
-                        .pickerStyle(.menu)
-                        .padding(.horizontal, 12)
-                        .foregroundColor(Color("FontColor"))
+                        .frame(width: geo.size.width, height: geo.size.height)
                     }
+                    .frame(height: 48)
                 }
                 
                 
                 Button("Сохранить") { store.send(.save) }
-                    .font(.headline)
-                    .frame(maxWidth: .infinity)
-                    .padding()
-                    .background(Color("ContrastColor"))
-                    .foregroundColor(Color("FontColor"))
-                    .cornerRadius(14)
-                    .padding(.top, 8)
+                .buttonStyle(CustomButtonStyle())
             }
             .padding(.horizontal, 8)
         }

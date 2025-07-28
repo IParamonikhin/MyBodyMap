@@ -2,6 +2,10 @@
 <!DOCTYPE plist PUBLIC "-//Apple//DTD PLIST 1.0//EN" "http://www.apple.com/DTDs/PropertyList-1.0.dtd">
 <plist version="1.0">
 <dict>
+	<key>NSHealthUpdateUsageDescription</key>
+	<string>Приложению требуется доступ к HealthKit для сохранения ваших данных о тренировках</string>
+	<key>NSHealthShareUsageDescription</key>
+	<string>Приложению требуется доступ к HealthKit для чтения ваших данных о здоровье</string>
 	<key>UTExportedTypeDeclarations</key>
 	<array>
 		<dict>
@@ -15,22 +19,6 @@
 			<array/>
 			<key>UTTypeIdentifier</key>
 			<string>ru.piv.trenditem</string>
-			<key>UTTypeTagSpecification</key>
-			<dict/>
-		</dict>
-		<dict/>
-	</array>
-	<key>UTImportedTypeDeclarations</key>
-	<array>
-		<dict>
-			<key>UTTypeConformsTo</key>
-			<array/>
-			<key>UTTypeDescription</key>
-			<string></string>
-			<key>UTTypeIconFiles</key>
-			<array/>
-			<key>UTTypeIdentifier</key>
-			<string></string>
 			<key>UTTypeTagSpecification</key>
 			<dict/>
 		</dict>

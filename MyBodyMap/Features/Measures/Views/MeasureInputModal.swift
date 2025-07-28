@@ -11,136 +11,93 @@ struct MeasureInputModal: View {
     let field: MeasuresFeature.MeasuresField
     @State var value: Double = 0
     var onSave: (Double) -> Void
-
+    @State private var contentHeight: CGFloat = .zero
+    
     @Environment(\.dismiss) private var dismiss
-
+    
     var body: some View {
         NavigationStack {
-            ZStack {
-                Color("backgroundColor")
-                    .ignoresSafeArea()
-                VStack(alignment: .leading, spacing: 18) {
-                    Text(fieldLabel)
-                        .font(.largeTitle.bold())
-                        .padding(.bottom, 12)
-
-                    Text("Введите значение")
-                        .font(.subheadline)
-                        .foregroundColor(Color("AccentColor"))
-
-                    ZStack {
-                        RoundedRectangle(cornerRadius: 12, style: .continuous)
-                            .fill(Color("textfieldColor"))
-                            .frame(height: 48)
-                        TextField("0", value: $value, format: .number)
-                            .keyboardType(.decimalPad)
-                            .padding(.horizontal, 12)
-                            .foregroundColor(Color("AccentColor"))
-                    }
-                    .padding(.horizontal, 4)
-
-                    Spacer()
-                }
-                .padding(.top, 24)
-                .padding(.horizontal, 20)
-                .toolbar {
-                    ToolbarItem(placement: .confirmationAction) {
-                        Button("OK") {
-                            onSave(value)
-                            dismiss()
+            Color("BGColor").ignoresSafeArea()
+                .overlay(
+                    ScrollView(showsIndicators: false) {
+                        VStack() {
+                            HStack{
+                                Text(field.label)
+                                    .font(.largeTitle.bold())
+                                    .foregroundStyle(Color("FontColor"))
+                                    .padding(.horizontal, 16)
+                                    .padding(.vertical, 16)
+                                Spacer()
+                            }
+                            CardView{
+                                VStack() {
+                                    HStack{
+                                        Text("Введите значение:")
+                                            .font(.title2.bold())
+                                            .foregroundStyle(Color("FontColor"))
+                                        Spacer()
+                                    }
+                                    ElementBackgroundView() {
+                                        HStack{
+                                            TextField("0", value: $value, format: .number)
+                                                .keyboardType(.decimalPad)
+                                                .padding(.horizontal, 4)
+                                                .foregroundStyle(Color("FontColor"))
+                                                .font(.system(size: 22, weight: .medium))
+                                            Spacer()
+                                            Text(field.rawValue == "weight" ? "кг" : "см")
+                                                .padding(.horizontal, 4)
+                                                .foregroundStyle(Color("FontColor"))
+                                                .font(.system(size: 22, weight: .medium))
+                                        }
+                                    }
+                                }
+                            }
+                            .padding(.horizontal, 16)
+                            
+                            if let hint = MeasurementHints.hint(for: field.rawValue) {
+                                CardView {
+                                    VStack() {
+                                        HStack{
+                                            Text("Порядок измерений")
+                                                .font(.title2.bold())
+                                                .foregroundStyle(Color("FontColor"))
+                                            Spacer()
+                                        }
+                                        ElementBackgroundView(height: contentHeight) {
+                                            DynamicHeightView(height: $contentHeight) {
+                                                Text(hint)
+                                                    .font(.system(size: 18, weight: .medium))
+                                                    .foregroundStyle(Color("FontColor"))
+                                                    .padding(.vertical, 12)
+                                            }
+                                        }
+                                        
+                                    }
+                                }
+                                .padding(.horizontal, 16)
+                            }
+                            
+                            CardView{
+                                HStack{
+                                    Button("Отмена") {
+                                        dismiss()
+                                    }
+                                    .buttonStyle(CustomButtonStyle())
+                                    
+                                    Button("Сохранить") {
+                                        onSave(value)
+                                        dismiss()
+                                    }
+                                    .buttonStyle(CustomButtonStyle())
+                                }
+                            }
+                            .padding(.horizontal, 16)
+                            
                         }
                     }
-                    ToolbarItem(placement: .cancellationAction) {
-                        Button("Отмена") {
-                            dismiss()
-                        }
-                    }
-                }
-            }
-        }
-        .foregroundColor(Color("AccentColor"))
-    }
-
-    private var fieldLabel: String {
-        switch field {
-        case .forearm: return "Предплечье"
-        case .biceps: return "Бицепс"
-        case .neck: return "Шея"
-        case .chest: return "Грудь"
-        case .shoulders: return "Плечи"
-        case .waist: return "Талия"
-        case .hips: return "Бёдра"
-        case .thigh: return "Бедро"
-        case .buttocks: return "Ягодицы"
-        case .calf: return "Икра"
-        case .stomach: return "Живот"
-        case .weight: return "Вес"
-        case .height: return "Рост"
-        case .fatPercent: return "% Жира"
+                )
+                .navigationBarTitleDisplayMode(.inline)
         }
     }
 }
-
-//import SwiftUI
-//
-//struct MeasureInputModal: View {
-//    let field: MeasuresFeature.MeasuresField
-//    @State var value: Double = 0
-//    var onSave: (Double) -> Void
-//
-//    @Environment(\.dismiss) private var dismiss
-//
-//    var body: some View {
-//        
-//        NavigationStack {
-//            ZStack {
-//                Color("backgroundColor")
-//                    .ignoresSafeArea()
-//                Form {
-//                    Section(header: Text("Введите значение")) {
-//                        TextField("0", value: $value, format: .number)
-//                            .keyboardType(.decimalPad)
-//                            .textFieldStyle(.plain)
-//                            .background(Color("textfieldColor"))
-//                            .frame(maxWidth: .infinity)
-//                    }
-//                }
-//                .navigationTitle(fieldLabel)
-//                .toolbar {
-//                    ToolbarItem(placement: .confirmationAction) {
-//                        Button("OK") {
-//                            onSave(value)
-//                            dismiss()
-//                        }
-//                    }
-//                    ToolbarItem(placement: .cancellationAction) {
-//                        Button("Отмена") {
-//                            dismiss()
-//                        }
-//                    }
-//                }
-//                .scrollContentBackground(.hidden) // скрыть фон формы, чтобы был твой цвет
-//            }
-//            .background(Color.clear)
-//        }
-//    }
-//
-//    private var fieldLabel: String {
-//        switch field {
-//        case .forearm: return "Предплечье"
-//        case .biceps: return "Бицепс"
-//        case .neck: return "Шея"
-//        case .chest: return "Грудь"
-//        case .shoulders: return "Плечи"
-//        case .waist: return "Талия"
-//        case .hips: return "Бёдра"
-//        case .thigh: return "Бедро"
-//        case .buttocks: return "Ягодицы"
-//        case .calf: return "Икра"
-//        case .stomach: return "Живот"
-//        case .weight: return "Вес"
-//        case .height: return "Рост"
-//        case .fatPercent: return "% Жира"
-//        }
-//    }
-//}
