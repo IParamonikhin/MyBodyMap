@@ -5,6 +5,13 @@
 //  Created by Иван on 12.07.2025.
 //
 
+//сохранение заполнения в реалм, каждый день заполнение шкалы начинается сначала
+//В реалм надо хранить так дата (только день без времени), обновляемая ячейка выпитого (здесь при пополнении шкалы изменяем значение,  не создаем новую строку), цель по питью в день, массив выпитых напитков за день (Drink)( каждое пополнение шкалы запись в массив)
+
+//на кардвью со шкалой сверху справа добавить кнопку календарь
+// - календарь открывает через навигацию вью где кастомный календарь на котором на днях вокруг числа кольцо в стиле apple fitnes заполняется в зависимости от выпитого за день, также как шкала на вотерфичавью, круг до цели заполняется циан, сверх цели заполняется зеленым
+// - - по нажатию на число открывается модалка на ней шкала выпитого за тот день, а под ней лист с напитками за день
+
 import SwiftUI
 import ComposableArchitecture
 
@@ -30,42 +37,17 @@ public struct WaterTrackerView: View {
                                     .font(.title2.bold())
                                     .foregroundStyle(Color("FontColor"))
                                 Spacer()
+                                Button {
+                                    store.send(.openSettings)
+                                } label: {
+                                    Image(systemName: "slider.horizontal.3")
+                                        .font(.title2)
+                                        .foregroundStyle(Color("FontColor"))
+                                }
                             }
-                            ZStack {
-                                
-                                RoundedRectangle(cornerRadius: 12, style: .continuous)
-                                    .fill(Color("TextfieldColor"))
-                                    .frame(height: 48)
-                                GeometryReader { geo in
-                                    let width = max(12, CGFloat(store.dailyIntake / max(1, store.goal)) * (geo.size.width))
-                                    ZStack(alignment: .leading) {
-                                        RoundedRectangle(cornerRadius: 12, style: .continuous)
-                                            .fill(Color.cyan)
-                                            .blur(radius: isPulsing ? 5 : 3)
-                                            .opacity(isPulsing ? 0.7 : 1.0)
-                                            .frame(width: min(width, geo.size.width), height: 48)
-                                            .animation(.easeInOut(duration: 1.2), value: isPulsing)
-                                            .animation(.easeInOut, value: store.dailyIntake)
-                                        if store.dailyIntake > store.goal {
-                                            RoundedRectangle(cornerRadius: 12, style: .continuous)
-                                                .fill(Color.green)
-                                                .blur(radius: isPulsing ? 5 : 3)
-                                                .opacity(isPulsing ? 0.7 : 1.0)
-                                                .frame(
-                                                    width: min(width - (geo.size.width - 16), geo.size.width),
-                                                    height: 48
-                                                )
-                                                .animation(.easeInOut(duration: 1.2), value: isPulsing)
-                                                .animation(.easeInOut, value: store.dailyIntake)
-                                        }
-                                    }
-                                }.frame(height: 48)
-                                
-                                Text("\(Int(store.dailyIntake)) из \(Int(store.goal)) мл")
-                                    .font(.title2)
-                                    .bold()
-                                    .foregroundStyle(Color("BodyColor"))
-                            }
+                            WaterProgressBar(intake: store.dailyIntake,
+                                             goal: store.goal,
+                                             isPulsing: isPulsing)
                         }
                         .padding(.vertical, 12)
                     }
@@ -112,14 +94,17 @@ public struct WaterTrackerView: View {
                 item: $store.scope(state: \.quickDrinkAmount, action: \.quickDrinkAmount)
             ) { quickDrinkStore in
                 QuickDrinkAmountSheet(store: quickDrinkStore)
-                    .presentationDetents([.height(230)]) // <-- Точная высота CardView + paddings
+            }
+            .sheet(item: $store.scope(state: \.settingsSheet, action: \.settingsSheet)) { sheetStore in
+                WaterSettingsSheet(store: sheetStore)
             }
             .navigationTitle("Трекер воды")
-        }
-        .onAppear {
-            withAnimation(Animation.easeInOut(duration: 1.2).repeatForever(autoreverses: true)) {
-                isPulsing = true
+            .onAppear {
+                withAnimation(Animation.easeInOut(duration: 1.2).repeatForever(autoreverses: true)) {
+                    isPulsing = true
+                }
             }
+            .onAppear { store.send(.onAppear) }
         }
     }
 }
