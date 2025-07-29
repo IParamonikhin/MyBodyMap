@@ -17,7 +17,7 @@ struct TrendGridIconView: View {
             if isSelected {
                 RoundedRectangle(cornerRadius: 28)
                      .fill(Color.cyan.opacity(0.55))
-                     .frame(width: 98, height: 128) // чуть больше самой ячейки
+                     .frame(width: 98, height: 128) 
                      .blur(radius: 14)
                      .offset(y: 6)
                      .zIndex(-1)

@@ -66,7 +66,7 @@ public struct WaterTrackerFeature {
                 if let today = waterService.getToday() {
                     state.dailyIntake = today.totalDrunk
                     state.goal = today.goal
-                    state.drinks = Array(today.drinks) // <-- List<ConsumedDrink> -> [ConsumedDrink]
+                    state.drinks = Array(today.drinks) 
                 }
                 state.quickDrinkAmount = nil
                 return .none

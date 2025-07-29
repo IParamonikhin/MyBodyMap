@@ -50,7 +50,6 @@ public struct TrendsFeature {
                 let goal = profileService.load().goal
                 state.goal = goal
 
-                // goal прокидываем во все сабфичи
                 var mainCard = state.mainCard
                 mainCard.goal = goal
                 state.mainCard = mainCard
@@ -86,7 +85,6 @@ public struct TrendsFeature {
                     allTrendsSheet.goal = state.goal
                     state.allTrendsSheet = allTrendsSheet
                 }
-
                 return .none
             
             case let .selectField(field):
@@ -108,7 +106,6 @@ public struct TrendsFeature {
             case .allTrendsSheet(.dismiss):
                 if let newOrder = state.allTrendsSheet?.trends.map({ $0.field }) {
                     trendsService.saveOrder(newOrder)
-                    // После reorder или удаления тренда — обновляем всё!
                     return .send(.onAppear)
                 }
                 return .none

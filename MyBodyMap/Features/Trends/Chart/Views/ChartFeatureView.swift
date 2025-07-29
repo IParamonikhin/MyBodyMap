@@ -11,9 +11,91 @@ import Charts
 
 public struct ChartFeatureView: View {
     @Bindable var store: StoreOf<ChartFeature>
+    
     public init(store: StoreOf<ChartFeature>) { self.store = store }
-
-    /// Только уникальные точки по дате+значению (на случай дублей)
+    
+    private let weekInSeconds: TimeInterval = 60 * 60 * 24 * 7
+    
+    public var body: some View {
+        CardView {
+            VStack(alignment: .leading, spacing: 12) {
+                Text(label(for: store.field))
+                    .font(.title2.bold())
+                    .foregroundStyle(Color("FontColor"))
+                ZStack {
+                    RoundedRectangle(cornerRadius: 16, style: .continuous)
+                        .fill(Color("TextfieldColor"))
+                    if uniqueTrends.isEmpty {
+                        noDataView
+                    } else {
+                        chartView
+                    }
+                }
+                HStack {
+                    Text(uniqueTrends.last?.formatValue ?? "–")
+                        .font(.largeTitle.bold())
+                        .foregroundStyle(Color("FontColor"))
+                    Spacer()
+                    if let lastTrend = uniqueTrends.last {
+                        Text(lastTrend.diff > 0 ? "▲ \(lastTrend.formatValueDiff)"
+                             : lastTrend.diff < 0 ? "▼ \(lastTrend.formatValueDiff)"
+                             : "—")
+                        .foregroundStyle(TrendColor.textColor(for: lastTrend.diff, goal: store.goal))
+                        .font(.title2.bold())
+                    }
+                }
+            }
+        }
+        .padding(.horizontal)
+    }
+    
+    @ViewBuilder
+    private var chartView: some View {
+        let (lowerBound, upperBound) = chartYScaleDomain
+        Chart {
+            ForEach(uniqueTrends) { item in
+                LineMark(
+                    x: .value("Дата", item.date, unit: .day),
+                    y: .value("Значение", item.value)
+                )
+                .interpolationMethod(.monotone)
+                .foregroundStyle(TrendColor.color(for: item.diff, goal: store.goal))
+                PointMark(
+                    x: .value("Дата", item.date, unit: .day),
+                    y: .value("Значение", item.value)
+                )
+                .foregroundStyle(TrendColor.color(for: item.diff, goal: store.goal))
+            }
+        }
+        .chartScrollableAxes(.horizontal)
+        .chartXVisibleDomain(length: weekInSeconds)
+        .chartScrollPosition(initialX: uniqueTrends.last?.date ?? Date())
+        .chartYScale(domain: lowerBound...upperBound)
+        .chartXAxis {
+            AxisMarks(values: .stride(by: .day)) { value in
+                AxisGridLine()
+                AxisTick()
+                AxisValueLabel() {
+                    if let date = value.as(Date.self) {
+                        Text(date, format: .dateTime.weekday(.narrow))
+                            .font(.caption)
+                    }
+                }
+            }
+        }
+        .padding(.horizontal, 8)
+        .clipShape(RoundedRectangle(cornerRadius: 16, style: .continuous))
+        .animation(.easeInOut(duration: 0.36), value: store.fieldTrends)
+        .frame(height: 160)
+    }
+    
+    @ViewBuilder
+    private var noDataView: some View {
+        Text("Нет данных для графика")
+            .foregroundStyle(Color("FontColor"))
+            .frame(height: 120)
+    }
+    
     private var uniqueTrends: [TrendItem] {
         var seen = Set<String>()
         var result: [TrendItem] = []
@@ -26,79 +108,20 @@ public struct ChartFeatureView: View {
         }
         return result
     }
-
-    public var body: some View {
-        CardView {
-            VStack(alignment: .leading, spacing: 12) {
-                HStack {
-                    Text(label(for: store.field))
-                        .font(.title2.bold())
-                        .foregroundStyle(Color("FontColor"))
-                    Spacer()
-                }
-                ZStack {
-                    RoundedRectangle(cornerRadius: 16, style: .continuous)
-                        .fill(Color("TextfieldColor"))
-
-                    if !uniqueTrends.isEmpty {
-                        // Значения для оси
-                        let values = uniqueTrends.map(\.value)
-                        let mean = values.reduce(0, +) / Double(values.count)
-                        let minValue = values.min() ?? mean
-                        let maxValue = values.max() ?? mean
-                        let delta = max(mean - minValue, maxValue - mean)
-                        let padding = max(delta * 0.12, 0.6) // Динамический отступ
-                        let lowerBound = mean - delta - padding
-                        let upperBound = mean + delta + padding
-
-                        Chart {
-                            ForEach(uniqueTrends) { item in
-                                LineMark(
-                                    x: .value("Дата", item.date),
-                                    y: .value("Значение", item.value)
-                                )
-                                .interpolationMethod(.linear)
-                                .foregroundStyle(TrendColor.color(for: item.diff, goal: store.goal))
-                                
-                                PointMark(
-                                    x: .value("Дата", item.date),
-                                    y: .value("Значение", item.value)
-                                )
-                                .foregroundStyle(TrendColor.color(for: item.diff, goal: store.goal))
-                            }
-                        }
-                        .chartYScale(domain: lowerBound...upperBound)
-                        .chartXAxis {
-                            AxisMarks(preset: .aligned, values: .stride(by: .day, count: 7))
-                        }
-                        .padding(.horizontal, 8)
-                        .clipShape(RoundedRectangle(cornerRadius: 16, style: .continuous))
-                        .animation(.easeInOut(duration: 0.36), value: store.fieldTrends)
-                    } else {
-                        Text("Нет данных для графика")
-                            .foregroundStyle(Color("FontColor"))
-                            .frame(height: 120)
-                    }
-                }
-                .frame(height: 160)
-                HStack {
-                    Text(uniqueTrends.last?.formatValue ?? "–")
-                        .font(.largeTitle.bold())
-                        .foregroundStyle(Color("FontColor"))
-                    Spacer()
-                    if let diff = uniqueTrends.last?.diff {
-                        Text(diff > 0 ? "▲ \(uniqueTrends.last?.formatValueDiff ?? "")"
-                                      : diff < 0 ? "▼ \(uniqueTrends.last?.formatValueDiff ?? "")"
-                                      : "—")
-                        .foregroundStyle(TrendColor.textColor(for: diff, goal: store.goal))
-                            .font(.title2.bold())
-                    }
-                }
-            }
+    
+    private var chartYScaleDomain: (lower: Double, upper: Double) {
+        let values = uniqueTrends.map(\.value)
+        guard !values.isEmpty, let minValue = values.min(), let maxValue = values.max() else {
+            return (0, 100)
         }
-        .padding(.horizontal)
+        let padding = (maxValue - minValue) * 0.15
+        let lowerBound = max(0, minValue - padding)
+        let upperBound = maxValue + padding
+        if lowerBound == upperBound {
+            return (lowerBound - 5, upperBound + 5)
+        }
+        return (lowerBound, upperBound)
     }
-
+    
     private func label(for field: String) -> String { field.trendLabel }
 }
-

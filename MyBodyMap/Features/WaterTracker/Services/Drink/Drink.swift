@@ -14,12 +14,10 @@ final public class Drink: Object, Identifiable {
     @Persisted public var brand: String? = nil
     @Persisted public var barcode: String? = nil
     @Persisted public var type: String = "custom"
-    @Persisted public var amount: Double = 200 // мл
+    @Persisted public var amount: Double = 200
     @Persisted public var hydrationFactor: Double = 1.0 
     @Persisted public var imageUrl: String? = nil
 
-
-    // Конструктор из API
     static func from(product: OpenFoodFactsProduct) -> Drink {
         let drink = Drink()
         drink.name = product.product_name ?? "Без названия"

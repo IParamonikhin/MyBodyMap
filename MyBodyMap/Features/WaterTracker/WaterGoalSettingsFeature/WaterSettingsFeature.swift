@@ -46,36 +46,3 @@ public struct WaterSettingsFeature {
         }
     }
 }
-
-//import ComposableArchitecture
-//import Foundation
-//
-//@Reducer
-//public struct WaterSettingsFeature {
-//    @ObservableState
-//    public struct State: Equatable {
-//        @BindingState public var waterGoal: Int
-//        public init(waterGoal: Int) { self.waterGoal = waterGoal }
-//    }
-//
-//    @CasePathable
-//    public enum Action: BindableAction {
-//        case binding(BindingAction<State>)
-//        case save(Int)
-//        case cancel
-//    }
-//
-//    public var body: some ReducerOf<Self> {
-//        BindingReducer()
-//        Reduce { state, action in
-//            switch action {
-//            case .save(let value):
-//                return .send(.save(value))
-//            case .cancel:
-//                return .send(.cancel)
-//            case .binding:
-//                return .none
-//            }
-//        }
-//    }
-//}

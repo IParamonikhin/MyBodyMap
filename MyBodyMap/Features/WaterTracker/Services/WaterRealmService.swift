@@ -26,7 +26,7 @@ final class WaterRealmService: WaterStoring {
     func getOrCreateDay(for date: Date = Date()) -> WaterDay {
 
         let realm = try! Realm()
-        print (realm.configuration.fileURL)
+//        print (realm.configuration.fileURL)
         let dayStart = startOfDay(for: date)
         if let day = realm.objects(WaterDay.self)
             .filter("date == %@", dayStart)

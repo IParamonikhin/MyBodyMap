@@ -9,8 +9,8 @@ import Foundation
 
 struct BodyPoint: Identifiable {
     let id: MeasuresFeature.MeasuresField
-    let x: CGFloat // 0...1
-    let y: CGFloat // 0...1
+    let x: CGFloat 
+    let y: CGFloat
 }
 
 let maleBodyPoints: [BodyPoint] = [

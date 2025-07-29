@@ -37,7 +37,6 @@ struct BodySilhouetteView: View {
     }
     
     func checkTodayMeasured(for field: MeasuresFeature.MeasuresField) -> Bool {
-        // latestMeasures — это [String: Measure]
         guard let measure = latestMeasures[field.rawValue] else { return false }
         return Calendar.current.isDateInToday(measure.date)
     }
@@ -77,7 +76,6 @@ struct PulseCircle: View {
     var body: some View {
         let color = isTodayMeasured ? Color.green : Color.gray
         ZStack {
-            // Большой круг
             Circle()
                 .fill(color.opacity(0.5))
                 .frame(width: 35, height: 35)
@@ -85,7 +83,6 @@ struct PulseCircle: View {
                 .blur(radius: 8)
                 .opacity(animate ? 0.5 : 0.8)
                 .animation(.easeOut(duration: 1.2).repeatForever(autoreverses: true), value: animate)
-            // Малый круг
             Circle()
                 .fill(color.opacity(0.5))
                 .frame(width: 28, height: 28)

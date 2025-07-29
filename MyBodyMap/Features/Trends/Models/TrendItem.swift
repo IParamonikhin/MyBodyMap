@@ -17,7 +17,6 @@ public struct TrendItem: Identifiable, Equatable, Transferable, Codable {
     public let date: Date
     public let diff: Double
 
-//    public var label: String { field.capitalized }
     public var label: String { field.trendLabel }
     
     public var formatValue: String { String(format: "%.1f", value) }

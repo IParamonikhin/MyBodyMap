@@ -68,6 +68,7 @@ struct MeasureInputModal: View {
                                             DynamicHeightView(height: $contentHeight) {
                                                 Text(hint)
                                                     .font(.system(size: 18, weight: .medium))
+                                                    .multilineTextAlignment(.leading)
                                                     .foregroundStyle(Color("FontColor"))
                                                     .padding(.vertical, 12)
                                             }

@@ -15,9 +15,9 @@ struct MyBodyMapApp: SwiftUI.App {
         let config = Realm.Configuration(
             schemaVersion: 4,
             migrationBlock: { migration, oldSchemaVersion in
-                // migration logic if needed
             }
         )
+        
         Realm.Configuration.defaultConfiguration = config
         let navAppearance = UINavigationBarAppearance()
         let tabAppearance = UITabBarAppearance()
@@ -26,14 +26,12 @@ struct MyBodyMapApp: SwiftUI.App {
         let tabItemSelectedColor = UIColor(named: "FontColor") ?? .label
         let bgColor = UIColor(named: "BGColor") ?? .systemBackground
 
-        // Заголовок
         navAppearance.titleTextAttributes = [.foregroundColor: fontColor]
         navAppearance.largeTitleTextAttributes = [.foregroundColor: fontColor]
         navAppearance.backgroundColor = bgColor
         navAppearance.shadowColor = .clear
         navAppearance.shadowImage = UIImage()
 
-        // Кнопки навбара (тулбар, барбаттоны)
         let buttonAppearance = UIBarButtonItemAppearance()
         buttonAppearance.normal.titleTextAttributes = [.foregroundColor: fontColor]
         buttonAppearance.highlighted.titleTextAttributes = [.foregroundColor: fontColor]
@@ -42,13 +40,11 @@ struct MyBodyMapApp: SwiftUI.App {
         navAppearance.doneButtonAppearance = buttonAppearance
         navAppearance.backButtonAppearance = buttonAppearance
 
-        // Применяем все состояния
         UINavigationBar.appearance().standardAppearance = navAppearance
         UINavigationBar.appearance().scrollEdgeAppearance = navAppearance
         UINavigationBar.appearance().compactAppearance = navAppearance
-        UINavigationBar.appearance().tintColor = fontColor // Цвет иконок back/close и любых SF Symbols
+        UINavigationBar.appearance().tintColor = fontColor
 
-        // TabBar
         tabAppearance.backgroundColor = bgColor
         tabAppearance.shadowColor = .clear
         tabAppearance.shadowImage = UIImage()
@@ -79,9 +75,6 @@ struct MyBodyMapRootView: View {
             Tab("Измерения", systemImage: "ruler") {
                 MeasuresView(store: Store(initialState: MeasuresFeature.State()) { MeasuresFeature() })
             }
-            Tab("Фото", systemImage: "photo.on.rectangle") {
-                PhotoView(store: Store(initialState: PhotoFeature.State()) { PhotoFeature() })
-            }
             Tab("Тренды", systemImage: "chart.line.uptrend.xyaxis") {
                 TrendsFeatureView(store: Store(initialState: TrendsFeature.State()) { TrendsFeature() })
             }
@@ -93,7 +86,6 @@ struct MyBodyMapRootView: View {
             }
         }
         .onAppear {
-            // Запускаем только один раз
             if !requestedHealthKit {
                 requestedHealthKit = true
                 DispatchQueue.main.async {

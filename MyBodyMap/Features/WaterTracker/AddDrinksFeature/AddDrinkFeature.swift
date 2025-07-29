@@ -52,11 +52,9 @@ public struct AddDrinkFeature {
             case .barcodeScanned(let code):
                 state.barcode = code
                 state.isScanning = false
-                // Тут автозаполнение, если хочешь
                 return .none
             case .loadHydrationForType:
                 state.hydrationLoading = true
-                // Можно запросить из API, если реализовано
                 return .run { [type = state.type] send in
                     let hydration = Drink.hydrationFactor(forType: type)
                     await send(.hydrationLoaded(hydration))

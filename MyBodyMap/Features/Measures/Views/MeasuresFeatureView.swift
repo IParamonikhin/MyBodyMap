@@ -17,7 +17,6 @@ public struct MeasuresView: View {
             ZStack{
                 Color("BGColor").ignoresSafeArea()
                 VStack(spacing: 0) {
-                    //Text("Добавь свои измерения").padding(10)
                     BodySilhouetteView(
                         selectedField: store.selectedField,
                         onSelect: { field in store.send(.selectField(field)) },

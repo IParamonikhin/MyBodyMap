@@ -58,7 +58,6 @@ public struct AddDrinkView: View {
     @Bindable var store: StoreOf<AddDrinkFeature>
     @Environment(\.dismiss) var dismiss
 
-    // Находим DrinkType по tag
     func drinkType(for tag: String) -> DrinkType {
         drinkTypes.first { $0.tag == tag } ?? drinkTypes.last!
     }

@@ -12,11 +12,8 @@ struct ScannerOverlayView: View {
         GeometryReader { geo in
             let width = geo.size.width * 0.8
             let height = width
-//            let x = (geo.size.width - width) / 2
-//            let y = (geo.size.height - height) / 2
 
             ZStack {
-                // Затемнение с вырезом
                 Color.black.opacity(0.85)
                     .mask(
                         Rectangle()
@@ -28,12 +25,10 @@ struct ScannerOverlayView: View {
                             )
                     )
                     .compositingGroup()
-                // Рамка
                 RoundedRectangle(cornerRadius: 20)
                     .stroke(Color.white, lineWidth: 4)
                     .frame(width: width, height: height / 2)
                     .position(x: geo.size.width / 2, y: geo.size.height / 2)
-                // Иконка и текст внутри рамки
                 VStack(spacing: 8) {
                     Image(systemName: "barcode.viewfinder")
                         .resizable()

@@ -26,7 +26,6 @@ final class MeasuresRealmService: MeasuresStoring {
         let realm = try! Realm()
         try! realm.write {
             realm.add(measure)
-//            print (realm.configuration.fileURL)
         }
         if measure.type == "weight" || measure.type == "height" {
             updateBMIIfNeeded()
@@ -75,7 +74,6 @@ final class MeasuresRealmService: MeasuresStoring {
     }
     
     func loadLatestAllTypes() -> [String: Measure] {
-        // Последние значения по всем типам
         let realm = try! Realm()
         let all = realm.objects(Measure.self).sorted(byKeyPath: "date", ascending: false)
         var result = [String: Measure]()
@@ -108,7 +106,6 @@ final class MeasuresRealmService: MeasuresStoring {
     }
     
     private func updateBMIIfNeeded() {
-        // Найти последние значения веса и роста
         guard let weight = loadLatest(for: "weight")?.value,
               let height = loadLatest(for: "height")?.value,
               height > 0 else { return }
@@ -163,8 +160,6 @@ final class MeasuresRealmService: MeasuresStoring {
     }
     
 }
-
-// DependencyKey для MeasuresStoring
 
 private enum MeasuresServiceKey: DependencyKey {
     static let liveValue: MeasuresStoring = MeasuresRealmService()

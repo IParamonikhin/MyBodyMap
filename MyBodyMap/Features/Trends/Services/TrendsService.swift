@@ -49,7 +49,7 @@ public final class TrendsRealmService: TrendsStoring {
     
     public func loadAllTrends() -> [TrendItem] {
         let realm = try! Realm()
-        let fieldsFromDB = Array(Set(realm.objects(Measure.self).map(\.type))) // только реально существующие
+        let fieldsFromDB = Array(Set(realm.objects(Measure.self).map(\.type))) 
         let order = loadOrder().filter { fieldsFromDB.contains($0) }
         let orderedFields = order + fieldsFromDB.filter { !order.contains($0) }
         return orderedFields.compactMap { field in
